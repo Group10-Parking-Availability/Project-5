@@ -2,4 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="uncc_green">#046A38</color>
+    <color name="uncc_gold">#B9975B</color>
 </resources>

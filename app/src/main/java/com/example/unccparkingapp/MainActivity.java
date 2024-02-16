@@ -10,5 +10,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setTitle("UNCC Parking Availability");
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.rootView, new ParkingFragment())
+                .commit();
     }
 }
