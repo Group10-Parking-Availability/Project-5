@@ -16,3 +16,4 @@
 - Let the Gradle Build and click "Running Devices" on the far right vertical navigation bar towards the bottom
 - ![parkingapptutorial4](https://github.com/Group10-Parking-Availability/Project-3/assets/123900271/3d6aedae-d42a-496d-bc7b-451e1d273034)
 - After the application should install on the virtual Android device and display on there
+- If there are any questions or issues on how to run the program, please email me at dsperry2@uncc.edu
