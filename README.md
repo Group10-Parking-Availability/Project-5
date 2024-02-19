@@ -4,7 +4,7 @@
 - A mobile application for parking at UNCC using Android Studio.
 - The programming language we are using is Java and we are utilizing XML as our markup language for the framework.
 # Proof of Concept
- ![poc](https://github.com/Group10-Parking-Availability/Project-3/assets/123900271/9d6cdd6c-71b3-4fa2-85b5-7f11f97e1635)
+<img width="168" alt="poc" src="https://github.com/Group10-Parking-Availability/Project-3/assets/123900271/c3ad3b05-749f-4c77-8a4e-f8a79f7ba66b">
 # Instructions
 - Download Android Studio Hedgehog: https://developer.android.com/studio?gad_source=1&gclid=Cj0KCQiAoKeuBhCoARIsAB4WxtdTa7EVVZ3dk5RkKYO59fUX3Q0T-4d92A96yfozFB01REyVkCQfFSgaAqYuEALw_wcB&gclsrc=aw.ds
 - After downloading Android Studio Hedgehog, click in the top right "Get from VCS"
