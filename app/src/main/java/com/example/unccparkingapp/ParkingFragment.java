@@ -1,6 +1,7 @@
 package com.example.unccparkingapp;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.unccparkingapp.databinding.FragmentParkingBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,7 +22,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ParkingFragment extends Fragment {
@@ -31,7 +35,6 @@ public class ParkingFragment extends Fragment {
 
     FragmentParkingBinding binding;
     EditText editText1, editText2;
-    TextView textView1, textView2;
 
     //FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -57,9 +60,10 @@ public class ParkingFragment extends Fragment {
 
         editText1 = view.findViewById(R.id.editTextText2);
         editText2 = view.findViewById(R.id.editTextText);
-        textView1 = view.findViewById(R.id.textView);
-        textView2 = view.findViewById(R.id.textView2);
 
+        editText1.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+
+        List<ParkingData> parkingList = new ArrayList<>(); // Initialize the list
 
         db.collection("parking_data")
                 .get()
@@ -69,20 +73,19 @@ public class ParkingFragment extends Fragment {
                             String data1 = document.getString("location");
                             String data2 = document.getString("parking_available");
 
-                            // Check if data is not null before setting it to TextViews
-                            if (data1 != null && data2 != null) {
-                                textView1.setText("Data 1: " + data1);
-                                textView2.setText("Data 2: " + data2);
-                            } else {
-                                // Handle the case where data is null
-                                textView1.setText("Data 1: N/A");
-                                textView2.setText("Data 2: N/A");
-                            }
+                            ParkingData parkingData = new ParkingData(data1, data2);
+                            parkingList.add(parkingData);
                         }
+
+                        // Create and set the adapter
+                        MyAdapter adapter = new MyAdapter(parkingList);
+                        binding.recyclerView.setAdapter(adapter);
+
+                        // Set the layout manager
+                        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     } else {
                         // Handle errors
-                        textView1.setText("Error fetching data");
-                        textView2.setText("Error fetching data");
+                        Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                     }
                 });
 

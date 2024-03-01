@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">UNCC Parking App</string>
+    <string name="dataText2">Text 2</string>
+    <string name="dataText1">Text 1</string>
 </resources>
