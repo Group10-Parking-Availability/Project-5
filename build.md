@@ -8,7 +8,9 @@
 - If the project is not showing copy the link "https://github.com/Group10-Parking-Availability/Project-5.git" to the repository and paste it in the "Repository URL" tab of the vertical navigation bar on the left
 <br> ![parkingapptutorial3](https://github.com/Group10-Parking-Availability/Project-3/assets/123900271/8ce5b02c-f39b-4cd6-9bdc-bec59fb321ab) <br>
 - Give the application a few moments to process, and then press the run button or Shift + F10 to run the project
-- Let the Gradle Build and click "Running Devices" on the far right vertical navigation bar towards the bottom
+- Let the Gradle Build. If it doesn't automatically, there is a button on the top horizontal tool bar "Sync Project with Gradle Files" or you can use Ctrl + Shift + O (Letter 'O' not 0)
+<br> ![gradleButton](https://github.com/Group10-Parking-Availability/Project-5/assets/123900271/646860a7-1694-4072-a22c-52e93ff3f674) <br>
+- Then click "Running Devices" on the far right vertical navigation bar towards the bottom
 <br> ![parkingapptutorial4](https://github.com/Group10-Parking-Availability/Project-3/assets/123900271/3d6aedae-d42a-496d-bc7b-451e1d273034) <br>
 - After the application should install on the virtual Android device and display on there
 - If there are any questions or issues on how to run the program, please email me at dsperry2@uncc.edu
