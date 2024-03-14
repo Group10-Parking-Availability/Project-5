@@ -1,5 +1,7 @@
 package com.example.unccparkingapp;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -44,12 +47,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             parkingAvailableInt = 0; // Default value or any appropriate handling
         }
 
-        holder.textView1.setText("Location: " + itemData.getLocation());
-        holder.textView2.setText("Parking Available: " + parkingAvailableInt + "%");
-
-
-
+        holder.textView1.setText(itemData.getLocation());
+        holder.textView2.setText(parkingAvailableInt + "%" + "\navailable");
         holder.progressBarHorizontal.setProgress(parkingAvailableInt);
+
+        int uncc_green = 0xFF046A38;
+        int uncc_gold = 0xFFB9975B;
+
+        // Change colors to fit theme later
+        if (parkingAvailableInt <= 25) {
+            holder.textView2.setTextColor(Color.RED);
+            holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(Color.RED));
+        } else if (parkingAvailableInt <= 50 && parkingAvailableInt > 25) {
+            holder.textView2.setTextColor(ColorStateList.valueOf(uncc_gold));
+            holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(uncc_gold));
+        } else {
+            holder.textView2.setTextColor(ColorStateList.valueOf(uncc_green));
+            holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(uncc_green));
+        }
     }
 
     @Override
