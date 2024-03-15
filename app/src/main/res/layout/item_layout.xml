@@ -61,7 +61,29 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:max="100"
-        android:visibility="visible"/> <!-- Set visibility to "visible" or "gone" as needed -->
+        android:visibility="visible"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/expanded_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewTEST"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="321dp"
+            android:layout_marginBottom="90dp"
+            android:text="*This is where the graph and other additional info will appear*"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Set visibility to "visible" or "gone" as needed -->
 
 
 </LinearLayout>
