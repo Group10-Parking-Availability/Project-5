@@ -47,7 +47,7 @@
             app:srcCompat="@drawable/ic_favorites_filled" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/dropDownArrow"
             android:layout_width="66dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
