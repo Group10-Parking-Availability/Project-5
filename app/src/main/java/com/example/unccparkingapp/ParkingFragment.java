@@ -34,9 +34,6 @@ public class ParkingFragment extends Fragment {
     }
 
     FragmentParkingBinding binding;
-    EditText editText1, editText2;
-
-    //FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -57,11 +54,6 @@ public class ParkingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        editText1 = view.findViewById(R.id.editTextText2);
-        editText2 = view.findViewById(R.id.editTextText);
-
-        editText1.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
 
         List<ParkingData> parkingList = new ArrayList<>(); // Initialize the list
 
@@ -88,30 +80,5 @@ public class ParkingFragment extends Fragment {
                         Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-        binding.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DocumentReference docRef = db.collection("parking_data").document();
-                String inputData1 = editText1.getText().toString();
-                String inputData2 = editText2.getText().toString();
-
-                // Write data to the Firestore database
-                Map<String, Object> data = new HashMap<>();
-                data.put("location", inputData2);
-                data.put("parking_available", inputData1);
-
-                docRef.set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getActivity(), "Data saved successfully", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getActivity(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        });
     }
 }

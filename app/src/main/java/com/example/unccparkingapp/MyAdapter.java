@@ -5,12 +5,12 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -67,10 +67,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(uncc_green));
         }
 
+        if(!itemData.isExpand() == false)
+        {
+            holder.arrowRightView.setImageResource(R.drawable.ic_arrow_down);
+        } else {
+            holder.arrowRightView.setImageResource(R.drawable.ic_arrow_right);
+        }
+
         holder.expandedView.setVisibility(itemData.isExpand() ? View.VISIBLE : View.GONE);
         holder.textView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                itemData.setExpand(!itemData.isExpand());
+
+                notifyDataSetChanged();
+            }
+        });
+
+        holder.arrowRightView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 itemData.setExpand(!itemData.isExpand());
                 notifyDataSetChanged();
             }
@@ -92,12 +108,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         ConstraintLayout expandedView;
 
+        ImageView arrowRightView;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textView1 = itemView.findViewById(R.id.textView1);
             textView2 = itemView.findViewById(R.id.textView2);
             progressBarHorizontal = itemView.findViewById(R.id.progressBarHorizontal);
             expandedView = itemView.findViewById(R.id.expanded_view);
+            arrowRightView = itemView.findViewById(R.id.dropDownArrow);
         }
     }
 }
