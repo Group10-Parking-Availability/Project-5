@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/rounded_border">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +14,7 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="45dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_location" />
@@ -35,12 +36,12 @@
             android:layout_height="35dp"
             android:layout_weight="1"
             android:text="Text 1"
-            android:textAlignment="center"
+            android:gravity="center_horizontal"
             android:textSize="24sp" />
 
         <ImageView
             android:id="@+id/favoritesIcon"
-            android:layout_width="45dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_favorites_filled" />
@@ -57,9 +58,12 @@
         android:id="@+id/progressBarHorizontal"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
         android:layout_gravity="center"
         android:max="100"
+        android:progressDrawable="@drawable/progress_bar_progress"
+        android:background="@drawable/progress_bar_background"
         android:visibility="visible" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -84,5 +88,5 @@
 
     <!-- Set visibility to "visible" or "gone" as needed -->
 
-
 </LinearLayout>
+

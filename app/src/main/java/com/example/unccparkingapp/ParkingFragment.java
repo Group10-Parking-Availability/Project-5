@@ -76,10 +76,10 @@ public class ParkingFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String data1 = document.getString("location");
-                            String data2 = document.getString("parking_available");
+                            String location = document.getString("location");
+                            String parkingPercent = document.getString("parking_available");
 
-                            ParkingData parkingData = new ParkingData(data1, data2);
+                            ParkingData parkingData = new ParkingData(location, parkingPercent);
 
                             // Check if data is a favorite, and store accordingly
                             if (parkingData.isFavorite()) {
