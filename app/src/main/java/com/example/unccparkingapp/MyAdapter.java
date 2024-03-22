@@ -13,14 +13,26 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
-    private List<ParkingData> data;
+    // Define the interface for handling favorite item clicks
+    public interface FavoritesClickListener {
+        void onFavoriteClicked(ParkingData itemData);
+    }
 
-    public MyAdapter(List<ParkingData> data) {
+    private List<ParkingData> data;
+    private FavoritesClickListener listener;
+
+    public MyAdapter(List<ParkingData> data, FavoritesClickListener listener) {
         this.data = data;
+        this.listener = listener;
+    }
+
+    public List<ParkingData> getData() {
+        return data;
     }
 
     @NonNull
@@ -69,7 +81,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
         // Set arrow icon based on expansion state
-        if(!itemData.isExpand() == false) {
+        if (!itemData.isExpand()) {
             holder.arrowRightView.setImageResource(R.drawable.ic_arrow_down);
         } else {
             holder.arrowRightView.setImageResource(R.drawable.ic_arrow_right);
@@ -104,7 +116,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Toggle favorite state
                 itemData.setFavorite(!itemData.isFavorite());
+
+                // Notify the listener about the favorite item click
+                listener.onFavoriteClicked(itemData);
 
                 // Update the color of the favorite icon
                 int newIconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
