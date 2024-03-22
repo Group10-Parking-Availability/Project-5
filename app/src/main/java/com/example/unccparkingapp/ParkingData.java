@@ -4,6 +4,7 @@ public class ParkingData {
     private String location;
     private String parkingAvailable;
     private boolean expand;
+    private boolean favorite;
 
     public ParkingData() {
         // Empty constructor needed for Firestore
@@ -29,4 +30,8 @@ public class ParkingData {
     public void setExpand(boolean expand) {
         this.expand = expand;
     }
+
+    public boolean isFavorite() { return favorite; }
+
+    public void setFavorite(boolean favorite) { this.favorite = favorite; }
 }

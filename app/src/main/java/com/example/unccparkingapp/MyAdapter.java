@@ -1,5 +1,6 @@
 package com.example.unccparkingapp;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -8,11 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -26,6 +26,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the item layout
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_layout, parent, false);
         return new ViewHolder(view);
@@ -33,29 +34,29 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        // Retrieve data for the current position
         ParkingData itemData = data.get(position);
 
+        // Convert parking availability string to integer
         int parkingAvailableInt;
         String parkingAvailableString = itemData.getParkingAvailable();
-
         try {
             parkingAvailableInt = Integer.parseInt(parkingAvailableString);
-            // or
-            // parkingAvailableInt = Integer.valueOf(parkingAvailableString);
         } catch (NumberFormatException e) {
-            // Handle the case where the string is not a valid integer
             e.printStackTrace();
-            parkingAvailableInt = 0; // Default value or any appropriate handling
+            parkingAvailableInt = 0;
         }
 
+        // Set text views and progress bar
         holder.textView1.setText(itemData.getLocation());
         holder.textView2.setText(parkingAvailableInt + "%" + "\navailable");
         holder.progressBarHorizontal.setProgress(parkingAvailableInt);
 
+        // Define colors
         int uncc_green = 0xFF046A38;
         int uncc_gold = 0xFFB9975B;
 
-        // Change colors to fit theme later
+        // Set colors based on parking availability
         if (parkingAvailableInt <= 25) {
             holder.textView2.setTextColor(Color.RED);
             holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(Color.RED));
@@ -67,23 +68,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(uncc_green));
         }
 
-        if(!itemData.isExpand() == false)
-        {
+        // Set arrow icon based on expansion state
+        if(!itemData.isExpand() == false) {
             holder.arrowRightView.setImageResource(R.drawable.ic_arrow_down);
         } else {
             holder.arrowRightView.setImageResource(R.drawable.ic_arrow_right);
         }
 
+        // Show or hide expanded view based on expansion state
         holder.expandedView.setVisibility(itemData.isExpand() ? View.VISIBLE : View.GONE);
+
+        // Set click listener for location text view to toggle expansion state
         holder.textView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 itemData.setExpand(!itemData.isExpand());
-
                 notifyDataSetChanged();
             }
         });
 
+        // Set click listener for arrow icon to toggle expansion state
         holder.arrowRightView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,9 +96,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         });
 
+        // Set favorite icon color based on favorite state
+        int iconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
+        holder.favorite.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), iconColor));
+
+        // Set click listener for favorite icon to toggle favorite state and color
+        holder.favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemData.setFavorite(!itemData.isFavorite());
+
+                // Update the color of the favorite icon
+                int newIconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
+                holder.favorite.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), newIconColor));
+            }
+        });
     }
-
-
 
     @Override
     public int getItemCount() {
@@ -105,10 +122,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         TextView textView1;
         TextView textView2;
         ProgressBar progressBarHorizontal;
-
         ConstraintLayout expandedView;
-
         ImageView arrowRightView;
+        ImageView favorite;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -117,7 +133,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             progressBarHorizontal = itemView.findViewById(R.id.progressBarHorizontal);
             expandedView = itemView.findViewById(R.id.expanded_view);
             arrowRightView = itemView.findViewById(R.id.dropDownArrow);
+            favorite = itemView.findViewById(R.id.favoritesIcon);
         }
     }
 }
-
