@@ -3,6 +3,7 @@ package com.example.unccparkingapp;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.api.LogDescriptor;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -32,6 +37,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     public List<ParkingData> getData() {
+        Collections.sort(data, new Comparator<ParkingData>() {
+
+            @Override
+            public int compare(ParkingData o1, ParkingData o2) {
+                return o1.getLocation().compareToIgnoreCase(o2.getLocation());
+            }
+        });
         return data;
     }
 
@@ -82,9 +94,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         // Set arrow icon based on expansion state
         if (!itemData.isExpand()) {
-            holder.arrowRightView.setImageResource(R.drawable.ic_arrow_down);
-        } else {
             holder.arrowRightView.setImageResource(R.drawable.ic_arrow_right);
+        } else {
+            holder.arrowRightView.setImageResource(R.drawable.ic_arrow_down);
         }
 
         // Show or hide expanded view based on expansion state

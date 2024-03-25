@@ -3,6 +3,7 @@ package com.example.unccparkingapp;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClickListener {
@@ -67,7 +70,8 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                                 parkingList.add(parkingData);
                             }
                         }
-
+                        sortArrayLocation(parkingList);
+                        sortArrayLocation(favoritesList);
                         updateFavoritesVisibility(favoritesList);
                         // Notify adapters of data change
                         adapter.notifyDataSetChanged();
@@ -139,12 +143,18 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             favoritesList.add(itemData);
         }
 
+        sortArrayLocation(parkingList);
+        sortArrayLocation(favoritesList);
         // Update UI
         binding.recyclerView.getAdapter().notifyDataSetChanged();
         binding.recyclerViewFavorites.getAdapter().notifyDataSetChanged();
 
         // Update favorites visibility
         updateFavoritesVisibility(favoritesList);
+    }
+
+    public void sortArrayLocation(List<ParkingData> parkingData) {
+        Collections.sort(parkingData, Comparator.comparing(ParkingData::getLocation));
     }
 
 }
