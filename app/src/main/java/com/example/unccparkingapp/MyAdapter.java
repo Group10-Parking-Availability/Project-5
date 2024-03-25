@@ -1,5 +1,6 @@
 package com.example.unccparkingapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -57,7 +58,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         // Retrieve data for the current position
         ParkingData itemData = data.get(position);
 
@@ -106,6 +107,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.textView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                for (int i = 0; i < data.size(); i++){
+                    if(data.get(i).isExpand() && !data.get(position).isExpand()) {
+                        data.get(i).setExpand(false);
+                    }
+                }
                 itemData.setExpand(!itemData.isExpand());
                 notifyDataSetChanged();
             }
@@ -115,6 +121,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.arrowRightView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for (int i = 0; i < data.size(); i++){
+                    if(data.get(i).isExpand() && !data.get(position).isExpand()) {
+                        data.get(i).setExpand(false);
+                    }
+                }
                 itemData.setExpand(!itemData.isExpand());
                 notifyDataSetChanged();
             }
