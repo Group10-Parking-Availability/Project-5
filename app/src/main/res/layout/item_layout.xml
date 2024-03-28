@@ -1,11 +1,11 @@
 <!-- res/layout/item_layout.xml -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/rounded_border">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="45dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_location" />
@@ -32,16 +32,16 @@
 
         <TextView
             android:id="@+id/textView1"
-            android:layout_width="215dp"
+            android:layout_width="210dp"
             android:layout_height="35dp"
             android:layout_weight="1"
+            android:gravity="center_horizontal"
             android:text="Text 1"
-            android:textAlignment="center"
-            android:textSize="24sp" />
+            android:textSize="22sp" />
 
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="45dp"
+            android:id="@+id/favoritesIcon"
+            android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_favorites_filled" />
@@ -51,17 +51,20 @@
             android:layout_width="66dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_arrow_right" />
+            app:srcCompat="@drawable/ic_arrow_down" />
     </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBarHorizontal"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
         android:layout_gravity="center"
         android:max="100"
-        android:visibility="visible"/>
+        android:progressDrawable="@drawable/progress_bar_progress"
+        android:background="@drawable/progress_bar_background"
+        android:visibility="visible" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/expanded_view"
@@ -85,5 +88,5 @@
 
     <!-- Set visibility to "visible" or "gone" as needed -->
 
-
 </LinearLayout>
+

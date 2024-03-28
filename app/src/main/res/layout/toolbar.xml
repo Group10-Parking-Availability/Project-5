@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/uncc_green">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_uncc_foreground"
+            android:id="@+id/uncc_icon"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="-24dp"
+            android:layout_toEndOf="@+id/uncc_icon"
+            android:text="Parking Availability"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:id="@+id/parking_availability" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/uncc_icon"
+            android:layout_alignStart="@id/parking_availability"
+            android:layout_marginBottom="16dp"
+            android:text="Live"
+            android:textStyle="bold"
+            android:textColor="@color/uncc_gold" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

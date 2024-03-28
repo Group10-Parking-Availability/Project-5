@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="uncc_green">#046A38</color>
     <color name="uncc_gold">#B9975B</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>
