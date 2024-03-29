@@ -2,7 +2,12 @@ package com.example.unccparkingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+
+import java.io.File;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,5 +21,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.rootView, new ParkingFragment())
                 .commit();
+
     }
 }

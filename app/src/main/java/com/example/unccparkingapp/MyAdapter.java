@@ -131,6 +131,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         });
 
+        holder.location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         // Set favorite icon color based on favorite state
         int iconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
         holder.favorite.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), iconColor));
@@ -164,6 +171,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         ConstraintLayout expandedView;
         ImageView arrowRightView;
         ImageView favorite;
+        ImageView location;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -173,6 +181,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             expandedView = itemView.findViewById(R.id.expanded_view);
             arrowRightView = itemView.findViewById(R.id.dropDownArrow);
             favorite = itemView.findViewById(R.id.favoritesIcon);
+            location = itemView.findViewById(R.id.location_icon);
         }
     }
 }

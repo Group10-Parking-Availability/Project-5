@@ -1,6 +1,6 @@
 package com.example.unccparkingapp;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -18,6 +18,21 @@ import com.example.unccparkingapp.databinding.FragmentParkingBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -58,10 +73,12 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
+
                             String location = document.getString("location");
                             String parkingPercent = document.getString("parking_available");
+                            boolean favorite = loadJson(location);
 
-                            ParkingData parkingData = new ParkingData(location, parkingPercent);
+                            ParkingData parkingData = new ParkingData(location, parkingPercent, favorite);
 
                             // Check if data is a favorite, and store accordingly
                             if (parkingData.isFavorite()) {
@@ -70,6 +87,7 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                                 parkingList.add(parkingData);
                             }
                         }
+
                         sortArrayLocation(parkingList);
                         sortArrayLocation(favoritesList);
                         updateFavoritesVisibility(favoritesList);
@@ -83,13 +101,13 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                 });
     }
 
+    // Updates the visibility of the favorites section
     private void updateFavoritesVisibility(List<ParkingData> favoritesList) {
         // Check if the favorites list is empty, if so, hide the favorites RecyclerView and text
         if (favoritesList.isEmpty()) {
             binding.recyclerViewFavorites.setVisibility(View.GONE);
             binding.favoritesText.setVisibility(View.GONE);
 
-            // Set top margin for textView3
             int marginTopInDp = 0;
             int marginTopInPx = (int) (marginTopInDp * getResources().getDisplayMetrics().density);
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) binding.textView3.getLayoutParams();
@@ -101,21 +119,17 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             binding.favoritesText.setVisibility(View.VISIBLE);
 
             if (favoritesList.size() >= 3) {
-                // Calculate the height in pixels for 250dp
                 float density = getResources().getDisplayMetrics().density;
                 int pixels = (int) (235 * density + 0.5f);
 
-                // Set the height of the RecyclerView to 250dp
                 ViewGroup.LayoutParams layoutParams = binding.recyclerViewFavorites.getLayoutParams();
                 layoutParams.height = pixels;
                 binding.recyclerViewFavorites.setLayoutParams(layoutParams);
             } else {
-                // Set the height of the RecyclerView to wrap_content
                 ViewGroup.LayoutParams layoutParams = binding.recyclerViewFavorites.getLayoutParams();
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 binding.recyclerViewFavorites.setLayoutParams(layoutParams);
             }
-            // Set top margin for textView3
             int marginTopInDp = 8;
             int marginTopInPx = (int) (marginTopInDp * getResources().getDisplayMetrics().density);
             ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) binding.textView3.getLayoutParams();
@@ -124,12 +138,15 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         }
     }
 
+    // Moves array items accordingly when the favorite icon is clicked
     @Override
     public void onFavoriteClicked(ParkingData itemData) {
-        // Handle favorite item click here
-        // You need to move the item between lists and update UI accordingly
         List<ParkingData> parkingList = ((MyAdapter) binding.recyclerView.getAdapter()).getData();
         List<ParkingData> favoritesList = ((MyAdapter) binding.recyclerViewFavorites.getAdapter()).getData();
+
+        boolean newFavoriteStatus = itemData.isFavorite();
+
+        updateJson(itemData.getLocation(), newFavoriteStatus);
 
         if (!itemData.isFavorite()) {
             // Remove from favorites list
@@ -145,16 +162,128 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
 
         sortArrayLocation(parkingList);
         sortArrayLocation(favoritesList);
-        // Update UI
+
         binding.recyclerView.getAdapter().notifyDataSetChanged();
         binding.recyclerViewFavorites.getAdapter().notifyDataSetChanged();
 
-        // Update favorites visibility
         updateFavoritesVisibility(favoritesList);
     }
 
+    // Sorts the parking data array alphabetically
     public void sortArrayLocation(List<ParkingData> parkingData) {
-        Collections.sort(parkingData, Comparator.comparing(ParkingData::getLocation));
+        Collections.sort(parkingData, new Comparator<ParkingData>() {
+            @Override
+            public int compare(ParkingData p1, ParkingData p2) {
+                return p1.getLocation().compareToIgnoreCase(p2.getLocation());
+            }
+        });
     }
+
+    // Loads the favorites.json stored internally on the device
+    public boolean loadJson(String location) {
+        try {
+            FileInputStream fileInputStream = requireContext().openFileInput("favorites.json");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+
+            fileInputStream.close();
+
+            String json = stringBuilder.toString();
+            JSONArray jsonArray = new JSONArray(json);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String jsonLocation = jsonObject.getString("location");
+                boolean jsonFavorite = jsonObject.getBoolean("favorite");
+
+                if (location.equals(jsonLocation)) {
+                    Log.d("demo", "loadJson: " + jsonObject);
+                    return jsonFavorite;
+                }
+            }
+        } catch (IOException | JSONException e) {
+            Log.d("demo", "Error loading JSON: " + e.getMessage(), e);
+        }
+        return false;
+    }
+
+    // Updates the favorites.json file saved on the device, if theres no file it creates one
+    public void updateJson(String location, boolean favorite) {
+        try {
+            File file = new File(requireContext().getFilesDir(), "favorites.json");
+
+            if (!file.exists()) {
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("location", location);
+                jsonObject.put("favorite", favorite);
+                jsonArray.put(jsonObject);
+
+                FileWriter fileWriter = new FileWriter(file);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(jsonArray.toString());
+                bufferedWriter.close();
+
+                Log.d("demo", "New JSON file created and data saved");
+
+            } else {
+                // If the file exists, load its content and update as necessary
+                FileInputStream fileInputStream = requireContext().openFileInput("favorites.json");
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+
+                fileInputStream.close();
+
+                String json = stringBuilder.toString();
+                JSONArray jsonArray = new JSONArray(json);
+
+                boolean locationFound = false;
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String jsonLocation = jsonObject.getString("location");
+
+                    if (location.equals(jsonLocation)) {
+                        jsonObject.put("favorite", favorite);
+                        jsonArray.put(i, jsonObject);
+                        locationFound = true;
+                        break;
+                    }
+                }
+
+                if (!locationFound) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("location", location);
+                    jsonObject.put("favorite", favorite);
+                    jsonArray.put(jsonObject);
+                }
+
+                FileWriter fileWriter = new FileWriter(file);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(jsonArray.toString());
+                bufferedWriter.close();
+
+                Log.d("demo", "JSON data updated and saved");
+
+            }
+        } catch (IOException | JSONException e) {
+            Log.e("demo", "Error updating JSON: " + e.getMessage(), e);
+        }
+    }
+
 
 }
