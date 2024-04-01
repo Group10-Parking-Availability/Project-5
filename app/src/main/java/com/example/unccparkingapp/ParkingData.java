@@ -10,9 +10,10 @@ public class ParkingData {
         // Empty constructor needed for Firestore
     }
 
-    public ParkingData(String location, String parkingAvailable) {
+    public ParkingData(String location, String parkingAvailable, Boolean favorite) {
         this.location = location;
         this.parkingAvailable = parkingAvailable;
+        this.favorite = favorite;
     }
 
     public String getLocation() {
