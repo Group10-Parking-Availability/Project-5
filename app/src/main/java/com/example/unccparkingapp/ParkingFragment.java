@@ -56,8 +56,8 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         List<ParkingData> parkingList = new ArrayList<>(); // Initialize the list
         List<ParkingData> favoritesList = new ArrayList<>(); // Initialize favorites list
 
-        MyAdapter adapter = new MyAdapter(parkingList, this);
-        MyAdapter favAdapter = new MyAdapter(favoritesList, this);
+        MyAdapter adapter = new MyAdapter(this.getContext(), parkingList, this);
+        MyAdapter favAdapter = new MyAdapter(this.getContext(), favoritesList, this);
 
         // Set adapters for RecyclerViews
         binding.recyclerView.setAdapter(adapter);
@@ -214,7 +214,7 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         return false;
     }
 
-    // Updates the favorites.json file saved on the device, if theres no file it creates one
+    // Updates the favorites.json file saved on the device, if there's no file it creates one
     public void updateJson(String location, boolean favorite) {
         try {
             File file = new File(requireContext().getFilesDir(), "favorites.json");
@@ -234,7 +234,6 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                 Log.d("demo", "New JSON file created and data saved");
 
             } else {
-                // If the file exists, load its content and update as necessary
                 FileInputStream fileInputStream = requireContext().openFileInput("favorites.json");
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -284,6 +283,5 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             Log.e("demo", "Error updating JSON: " + e.getMessage(), e);
         }
     }
-
 
 }

@@ -1,9 +1,12 @@
 package com.example.unccparkingapp;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +14,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.api.LogDescriptor;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,8 +36,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private List<ParkingData> data;
     private FavoritesClickListener listener;
+    private Context context;
 
-    public MyAdapter(List<ParkingData> data, FavoritesClickListener listener) {
+    public MyAdapter(Context context, List<ParkingData> data, FavoritesClickListener listener) {
+        this.context = context;
         this.data = data;
         this.listener = listener;
     }
@@ -108,7 +115,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
                 for (int i = 0; i < data.size(); i++){
-                    if(data.get(i).isExpand() && !data.get(position).isExpand()) {
+                    if (data.get(i).isExpand() && !data.get(position).isExpand()) {
                         data.get(i).setExpand(false);
                     }
                 }
@@ -122,7 +129,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < data.size(); i++){
-                    if(data.get(i).isExpand() && !data.get(position).isExpand()) {
+                    if (data.get(i).isExpand() && !data.get(position).isExpand()) {
                         data.get(i).setExpand(false);
                     }
                 }
@@ -131,9 +138,31 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         });
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Set click listener for location icon to redirect user to maps
         holder.location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ParkingData clickedItem = data.get(holder.getAdapterPosition());
+
+                db.collection("parking_data")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                for(QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    if (documentSnapshot.getString("location").equals(clickedItem.getLocation())) {
+                                        String url = documentSnapshot.getString("url");
+                                        Log.d("demo", "onClick: url = " + url);
+                                        gotoUrl(url);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                // Handle errors
+                                Log.d("demo", "onClick: error grabbing url!");
+                            }
+                        });
 
             }
         });
@@ -162,6 +191,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    // Takes a string and parses it to a url
+    private void gotoUrl(String url) {
+        try {
+            Uri uri = Uri.parse(url);
+            context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        } catch (Exception e) {
+            Log.d("demo", "gotoUrl: error going to url.\n" + e.getMessage());
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
