@@ -23,9 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
@@ -34,9 +33,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         void onFavoriteClicked(ParkingData itemData);
     }
 
-    private List<ParkingData> data;
-    private FavoritesClickListener listener;
-    private Context context;
+    private final List<ParkingData> data;
+    private final FavoritesClickListener listener;
+    private final Context context;
 
     public MyAdapter(Context context, List<ParkingData> data, FavoritesClickListener listener) {
         this.context = context;
@@ -45,13 +44,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     public List<ParkingData> getData() {
-        Collections.sort(data, new Comparator<ParkingData>() {
-
-            @Override
-            public int compare(ParkingData o1, ParkingData o2) {
-                return o1.getLocation().compareToIgnoreCase(o2.getLocation());
-            }
-        });
+        data.sort((o1, o2) -> o1.getLocation().compareToIgnoreCase(o2.getLocation()));
         return data;
     }
 
@@ -64,6 +57,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         // Retrieve data for the current position
@@ -75,7 +69,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         try {
             parkingAvailableInt = Integer.parseInt(parkingAvailableString);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            Log.d("demo", "onBindViewHolder: " + e.getMessage());
             parkingAvailableInt = 0;
         }
 
@@ -92,7 +86,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         if (parkingAvailableInt <= 25) {
             holder.textView2.setTextColor(Color.RED);
             holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(Color.RED));
-        } else if (parkingAvailableInt <= 50 && parkingAvailableInt > 25) {
+        } else if (parkingAvailableInt <= 50) {
             holder.textView2.setTextColor(ColorStateList.valueOf(uncc_gold));
             holder.progressBarHorizontal.setProgressTintList(ColorStateList.valueOf(uncc_gold));
         } else {
@@ -112,6 +106,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         // Set click listener for location text view to toggle expansion state
         holder.textView1.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
                 for (int i = 0; i < data.size(); i++){
@@ -126,6 +121,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         // Set click listener for arrow icon to toggle expansion state
         holder.arrowRightView.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View v) {
                 for (int i = 0; i < data.size(); i++){
@@ -141,30 +137,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Set click listener for location icon to redirect user to maps
-        holder.location.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParkingData clickedItem = data.get(holder.getAdapterPosition());
+        holder.location.setOnClickListener(v -> {
+            ParkingData clickedItem = data.get(holder.getAdapterPosition());
 
-                db.collection("parking_data")
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                for(QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    if (documentSnapshot.getString("location").equals(clickedItem.getLocation())) {
-                                        String url = documentSnapshot.getString("url");
-                                        Log.d("demo", "onClick: url = " + url);
-                                        gotoUrl(url);
-                                        break;
-                                    }
+            db.collection("parking_data")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for(QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                if (Objects.equals(documentSnapshot.getString("location"), clickedItem.getLocation())) {
+                                    String url = documentSnapshot.getString("url");
+                                    Log.d("demo", "onClick: url = " + url);
+                                    gotoUrl(url);
+                                    break;
                                 }
-                            } else {
-                                // Handle errors
-                                Log.d("demo", "onClick: error grabbing url!");
                             }
-                        });
+                        } else {
+                            // Handle errors
+                            Log.d("demo", "onClick: error grabbing url!");
+                        }
+                    });
 
-            }
         });
 
         // Set favorite icon color based on favorite state
@@ -172,19 +165,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.favorite.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), iconColor));
 
         // Set click listener for favorite icon to toggle favorite state and color
-        holder.favorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Toggle favorite state
-                itemData.setFavorite(!itemData.isFavorite());
+        holder.favorite.setOnClickListener(v -> {
+            // Toggle favorite state
+            itemData.setFavorite(!itemData.isFavorite());
 
-                // Notify the listener about the favorite item click
-                listener.onFavoriteClicked(itemData);
+            // Notify the listener about the favorite item click
+            listener.onFavoriteClicked(itemData);
 
-                // Update the color of the favorite icon
-                int newIconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
-                holder.favorite.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), newIconColor));
-            }
+            // Update the color of the favorite icon
+            int newIconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
+            holder.favorite.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), newIconColor));
         });
     }
 

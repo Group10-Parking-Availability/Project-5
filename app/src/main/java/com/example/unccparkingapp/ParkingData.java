@@ -1,14 +1,10 @@
 package com.example.unccparkingapp;
 
 public class ParkingData {
-    private String location;
-    private String parkingAvailable;
+    private final String location;
+    private final String parkingAvailable;
     private boolean expand;
     private boolean favorite;
-
-    public ParkingData() {
-        // Empty constructor needed for Firestore
-    }
 
     public ParkingData(String location, String parkingAvailable, Boolean favorite) {
         this.location = location;
