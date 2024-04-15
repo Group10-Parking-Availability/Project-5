@@ -1,6 +1,7 @@
 package com.example.unccparkingapp;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,21 +24,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClickListener {
 
@@ -44,11 +41,12 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentParkingBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -56,8 +54,8 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         List<ParkingData> parkingList = new ArrayList<>(); // Initialize the list
         List<ParkingData> favoritesList = new ArrayList<>(); // Initialize favorites list
 
-        MyAdapter adapter = new MyAdapter(parkingList, this);
-        MyAdapter favAdapter = new MyAdapter(favoritesList, this);
+        MyAdapter adapter = new MyAdapter(this.getContext(), parkingList, this);
+        MyAdapter favAdapter = new MyAdapter(this.getContext(), favoritesList, this);
 
         // Set adapters for RecyclerViews
         binding.recyclerView.setAdapter(adapter);
@@ -99,6 +97,14 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                         Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        binding.reportbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Launch the PopUpReport activity
+                startActivity(new Intent(requireContext(), PopUpReport.class));
+            }
+        });
     }
 
     // Updates the visibility of the favorites section
@@ -139,10 +145,11 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
     }
 
     // Moves array items accordingly when the favorite icon is clicked
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onFavoriteClicked(ParkingData itemData) {
-        List<ParkingData> parkingList = ((MyAdapter) binding.recyclerView.getAdapter()).getData();
-        List<ParkingData> favoritesList = ((MyAdapter) binding.recyclerViewFavorites.getAdapter()).getData();
+        List<ParkingData> parkingList = ((MyAdapter) Objects.requireNonNull(binding.recyclerView.getAdapter())).getData();
+        List<ParkingData> favoritesList = ((MyAdapter) Objects.requireNonNull(binding.recyclerViewFavorites.getAdapter())).getData();
 
         boolean newFavoriteStatus = itemData.isFavorite();
 
@@ -171,12 +178,7 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
 
     // Sorts the parking data array alphabetically
     public void sortArrayLocation(List<ParkingData> parkingData) {
-        Collections.sort(parkingData, new Comparator<ParkingData>() {
-            @Override
-            public int compare(ParkingData p1, ParkingData p2) {
-                return p1.getLocation().compareToIgnoreCase(p2.getLocation());
-            }
-        });
+        parkingData.sort((p1, p2) -> p1.getLocation().compareToIgnoreCase(p2.getLocation()));
     }
 
     // Loads the favorites.json stored internally on the device
@@ -214,7 +216,7 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         return false;
     }
 
-    // Updates the favorites.json file saved on the device, if theres no file it creates one
+    // Updates the favorites.json file saved on the device, if there's no file it creates one
     public void updateJson(String location, boolean favorite) {
         try {
             File file = new File(requireContext().getFilesDir(), "favorites.json");
@@ -234,7 +236,6 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                 Log.d("demo", "New JSON file created and data saved");
 
             } else {
-                // If the file exists, load its content and update as necessary
                 FileInputStream fileInputStream = requireContext().openFileInput("favorites.json");
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -248,29 +249,7 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
 
                 fileInputStream.close();
 
-                String json = stringBuilder.toString();
-                JSONArray jsonArray = new JSONArray(json);
-
-                boolean locationFound = false;
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String jsonLocation = jsonObject.getString("location");
-
-                    if (location.equals(jsonLocation)) {
-                        jsonObject.put("favorite", favorite);
-                        jsonArray.put(i, jsonObject);
-                        locationFound = true;
-                        break;
-                    }
-                }
-
-                if (!locationFound) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("location", location);
-                    jsonObject.put("favorite", favorite);
-                    jsonArray.put(jsonObject);
-                }
+                JSONArray jsonArray = getJsonArray(location, favorite, stringBuilder);
 
                 FileWriter fileWriter = new FileWriter(file);
                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -283,6 +262,34 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         } catch (IOException | JSONException e) {
             Log.e("demo", "Error updating JSON: " + e.getMessage(), e);
         }
+    }
+
+    @NonNull
+    private static JSONArray getJsonArray(String location, boolean favorite, StringBuilder stringBuilder) throws JSONException {
+        String json = stringBuilder.toString();
+        JSONArray jsonArray = new JSONArray(json);
+
+        boolean locationFound = false;
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            String jsonLocation = jsonObject.getString("location");
+
+            if (location.equals(jsonLocation)) {
+                jsonObject.put("favorite", favorite);
+                jsonArray.put(i, jsonObject);
+                locationFound = true;
+                break;
+            }
+        }
+
+        if (!locationFound) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("location", location);
+            jsonObject.put("favorite", favorite);
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
     }
 
 

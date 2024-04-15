@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/round">
+
+    <EditText
+        android:id="@+id/issueEditText"
+        android:layout_width="367dp"
+        android:layout_height="65dp"
+        android:layout_below="@+id/issueText"
+        android:layout_marginHorizontal="20dp"
+        android:ems="10"
+        android:hint="Enter Issue"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/issueText"
+        android:layout_width="367dp"
+        android:layout_height="36dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="150dp"
+        android:text="What Is The Issue?"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#36683D" />
+
+    <TextView
+        android:id="@+id/detailsText"
+        android:layout_width="367dp"
+        android:layout_height="36dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="300dp"
+        android:text="Provide More Details Please:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#36683D" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="104dp"
+        android:layout_height="49dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginHorizontal="110dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="470dp"
+        android:text="Send"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#36683D" />
+
+    <EditText
+        android:id="@+id/detailsEditText"
+        android:layout_width="369dp"
+        android:layout_height="85dp"
+        android:layout_below="@+id/detailsText"
+        android:layout_marginHorizontal="20dp"
+        android:ems="10"
+        android:hint="Enter Details"
+        android:inputType="text"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/contactText"
+        android:layout_width="375dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="47dp"
+        android:lineSpacingExtra="10dp"
+        android:text="For Direct Contact Please Use This Number: 704-687-0161"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#36683D"
+        android:textStyle="bold" />
+
+</RelativeLayout>
