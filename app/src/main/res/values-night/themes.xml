@@ -2,6 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.UNCCParkingApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-       <item name="colorPrimary">@color/uncc_green</item>
+        <item name="colorPrimary">@color/uncc_green</item>
+        <item name="android:statusBarColor">@color/uncc_green</item>
+        <item name="android:navigationBarColor">@color/uncc_green</item>
     </style>
 </resources>
