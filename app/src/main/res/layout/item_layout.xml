@@ -17,7 +17,8 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_location" />
+            app:srcCompat="@drawable/ic_location"
+            />
 
         <TextView
             android:id="@+id/textView2"

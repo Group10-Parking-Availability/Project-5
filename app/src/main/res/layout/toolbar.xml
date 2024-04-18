@@ -12,7 +12,8 @@
             android:src="@mipmap/ic_uncc_foreground"
             android:id="@+id/uncc_icon"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/unc_charlotte_logo" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -20,7 +21,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginStart="-24dp"
             android:layout_toEndOf="@+id/uncc_icon"
-            android:text="Parking Availability"
+            android:text="@string/parking_availability"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -31,7 +32,7 @@
             android:layout_alignBottom="@+id/uncc_icon"
             android:layout_alignStart="@id/parking_availability"
             android:layout_marginBottom="16dp"
-            android:text="Live"
+            android:text="@string/live"
             android:textStyle="bold"
             android:textColor="@color/uncc_gold" />
 
