@@ -1,6 +1,7 @@
 package com.example.unccparkingapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -95,6 +97,14 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                         Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        binding.reportbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Launch the PopUpReport activity
+                startActivity(new Intent(requireContext(), PopUpReport.class));
+            }
+        });
     }
 
     // Updates the visibility of the favorites section
@@ -281,5 +291,6 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         }
         return jsonArray;
     }
+
 
 }
