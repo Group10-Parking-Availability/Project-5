@@ -4,4 +4,7 @@
     <string name="dataText1">Text 1</string>
     <string name="favoritesText">Favorites</string>
     <string name="allDecks">All Decks</string>
+    <string name="parking_availability">Parking Availability</string>
+    <string name="unc_charlotte_logo">UNC Charlotte Logo</string>
+    <string name="live">Live</string>
 </resources>

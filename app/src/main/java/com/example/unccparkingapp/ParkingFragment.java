@@ -4,12 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -98,13 +98,17 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                     }
                 });
 
-        binding.reportbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Launch the PopUpReport activity
-                startActivity(new Intent(requireContext(), PopUpReport.class));
-            }
+        // Click listener for report button, opens pop up report menu
+        binding.reportbtn.setOnClickListener(v -> {
+
+            binding.reportbtn.setEnabled(false);
+
+            startActivity(new Intent(requireContext(), PopUpReport.class));
+
+            // Handler to allow delay
+            new Handler().postDelayed(() -> binding.reportbtn.setEnabled(true), 500);
         });
+
     }
 
     // Updates the visibility of the favorites section
