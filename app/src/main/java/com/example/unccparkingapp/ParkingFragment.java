@@ -2,6 +2,7 @@ package com.example.unccparkingapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -20,6 +21,14 @@ import com.example.unccparkingapp.databinding.FragmentParkingBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +39,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +56,17 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         return binding.getRoot();
     }
 
+    //Used to designate the column that we want to access
+    static int CARPARKDESIG = 2;
+    static int OCCUPANCYLIMIT = 6;
+    static int CURRENTLEVEL = 7;
+
+
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         List<ParkingData> parkingList = new ArrayList<>(); // Initialize the list
         List<ParkingData> favoritesList = new ArrayList<>(); // Initialize favorites list
@@ -65,7 +82,147 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.recyclerViewFavorites.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        try{
+            // Used to access assets directory
+            AssetManager assetManager = getContext().getAssets();
+
+            // Used to open the excel file
+            OPCPackage pkg = OPCPackage.open(assetManager.open("CPCOUNTING.xlsx"));
+
+            // Create a xssfWorkbook from the excel file
+            Workbook xssfWorkbook = new XSSFWorkbook(pkg);
+
+            // Create a sheet form the workbook
+            Sheet sheet = xssfWorkbook.getSheetAt(0);
+
+
+
+            // There is information for a each deck through 49 rows Ex: North deck has infomation for rows 1-49
+            // The 3rd row contains the information that is most relevant to us but we need to get the row that is the 3rd row for every deck which is:
+            /*
+            North Deck = 3
+            Cone Deck Visitor = 51
+            CRI Deck = 99
+            Union Deck Upper = 147
+            South Village Deck = 195
+            East Deck 1 = 243
+            West Deck = 291
+            Cone Deck F/S = 339
+            East Deck 2/3 = 387
+            Union Deck Lower = 435
+            Admissions Lot = 483 ## I don't know if this one is necessary or not
+
+            Here we are populating a list of integers which we will use to get the rows we want when reading our sheet
+             */
+            List<Integer> rowNumbersForTotals = new ArrayList<Integer>();
+            rowNumbersForTotals.add(3);
+            rowNumbersForTotals.add(51);
+            rowNumbersForTotals.add(99);
+            rowNumbersForTotals.add(147);
+            rowNumbersForTotals.add(195);
+            rowNumbersForTotals.add(243);
+            //rowNumbersForTotals.add(291);
+            rowNumbersForTotals.add(339);
+            //rowNumbersForTotals.add(387);
+            rowNumbersForTotals.add(435);
+            rowNumbersForTotals.add(483);
+
+
+
+            // The columns are as follows
+            /*
+            CARPARKNO = 0
+            CARPARKABBR = 1
+            CARPARKDESIG = 2
+            COUNTINGCATEGORYNO = 3
+            COUNTINGCATEGORY = 4
+            FREELIMIT = 5
+            OCCUPANCYLIMIT = 6
+            OCCUPANCYLIMIT = 7
+            RESERVATION = 8
+            CAPACITY = 9
+
+            Most of these are likely not going to be used, but CARPARKDESIG, OCCUPANCYLIMIT, and CURRENTLEVEL all have static ints that hold their column number
+             */
+
+            Row currentRow;
+            Cell currentCell;
+
+            String location;
+            float parkingAvailableDecimal;
+            int parkingAvailable;
+            float totalSpots;
+            float spotsFull;
+
+            // Used to format the data of numeric cells
+            DataFormatter formatter = new DataFormatter();
+
+
+
+            // Looping through numbers we use to access the rows
+            for (Integer i : rowNumbersForTotals){
+                    // Sets current row based on our i
+                    currentRow = sheet.getRow(i);
+
+                    if (currentRow != null){
+                        // Setting our cell based on the currentRow and CARPARKDESIG
+                        currentCell = currentRow.getCell(CARPARKDESIG);
+                        // Setting location based on the string in the cell
+                        location = currentCell.getStringCellValue();
+
+                        // Kind of hacky but this is how I am formatting the location for Cone Deck Faculty/Staff so that it fits in the ui
+                        if (location.equals("Cone Deck Faculty/Staff")){
+                            location = "Cone Deck F/S";
+                        }
+
+                        // Setting our cell based on the currentRow and OCCUPANCYLIMIT
+                        currentCell = currentRow.getCell(OCCUPANCYLIMIT);
+                        // Setting totalSpots based on the number in the cell, have to use formatter to access this since it is a numeric cell
+                        totalSpots = Float.parseFloat(formatter.formatCellValue(currentCell));
+
+                        // Setting our cell based on the currentRow and CURRENTLEVEL
+                        currentCell = currentRow.getCell(CURRENTLEVEL);
+                        // Setting spotsFull based on the number in the cell, have to use formatter to access this since it is a numeric cell
+                        spotsFull = Float.parseFloat(formatter.formatCellValue(currentCell));
+
+                        // Math to calculate the percentage of spots available
+                        parkingAvailableDecimal = 100 * (spotsFull/totalSpots);
+                        parkingAvailable = (int)Math.round(parkingAvailableDecimal);
+
+                        // Loads if the location has been favorited from our Json file
+                        boolean favorite = loadJson(location);
+
+                        // Creating our parkingData obj
+                        ParkingData parkingData = new ParkingData(location, parkingAvailable, favorite, (int)totalSpots, (int)spotsFull);
+
+                        // Check if data is a favorite, and store accordingly
+                        if (parkingData.isFavorite()) {
+                            favoritesList.add(parkingData);
+                        } else {
+                            parkingList.add(parkingData);
+                        }
+
+                        //Sending lists to relevant functions
+                        sortArrayLocation(parkingList);
+                        sortArrayLocation(favoritesList);
+                        updateFavoritesVisibility(favoritesList);
+                        // Notify adapters of data change
+                        adapter.notifyDataSetChanged();
+                        favAdapter.notifyDataSetChanged();
+
+                    }
+
+                }
+            pkg.close();
+
+        }
+        catch (IOException | InvalidFormatException e){
+            Log.d("error", "Error: IOException when trying to read spreadsheet");
+        }
+
+    // **Code that was used when accessing firebase**
         // Collect data from the database and set the location and percent of parking available
+        /*
         db.collection("parking_data")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -97,6 +254,8 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                         Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+         */
 
         // Click listener for report button, opens pop up report menu
         binding.reportbtn.setOnClickListener(v -> {
