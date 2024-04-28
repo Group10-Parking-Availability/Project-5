@@ -20,11 +20,22 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+i
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.ArrayList;
+
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
@@ -62,6 +73,54 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         // Retrieve data for the current position
         ParkingData itemData = data.get(position);
+
+
+        // Initialize chart
+        LineChart chart = holder.itemView.findViewById(R.id.chart);
+        chart.setDrawBorders(true);
+        chart.setBorderColor(Color.rgb(4,106,56));
+
+
+        // Timestamp labels
+        String[] timestamps = new String[]{"12:00AM", "03:00AM", "06:00AM", "09:00AM", "12:00PM", "3:00PM", "6:00PM", "9:00PM"};
+
+        // Manual data setup * need to implement dynamic functionality *
+        List<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(0, 20));
+        entries.add(new Entry(1, 50));
+        entries.add(new Entry(2, 30));
+        entries.add(new Entry(3, 30));
+        entries.add(new Entry(4, 40));
+        entries.add(new Entry(5, 50));
+        entries.add(new Entry(6, 60));
+        entries.add(new Entry(7, 30));
+
+        // Configure the data set
+        LineDataSet dataSet = new LineDataSet(entries, "Current % of spots Available");
+        dataSet.setColor(Color.BLACK);
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setCircleColor(Color.rgb(185,151,91));
+
+        // Set up the chart data and refresh
+        LineData lineData = new LineData(dataSet);
+        chart.setData(lineData);
+
+        // Customize the X-axis
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new TimestampAxisValueFormatter(timestamps));
+        xAxis.setLabelCount(timestamps.length);
+        xAxis.setLabelRotationAngle(-45);
+        xAxis.setDrawGridLines(false);
+
+        // Configure the Y-axis (left)
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setAxisMaximum(100f);
+        leftAxis.setAxisMinimum(0f);
+        chart.getAxisRight().setEnabled(false); // Disable right Y-axis
+        chart.invalidate(); // Redraw the chart
+
 
         // Convert parking availability string to integer
         int parkingAvailableInt;
@@ -192,6 +251,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             Log.d("demo", "gotoUrl: error going to url.\n" + e.getMessage());
         }
     }
+
+    public class TimestampAxisValueFormatter extends ValueFormatter {
+        private final String[] values;
+
+        // Constructor that takes an array of strings
+        public TimestampAxisValueFormatter(String[] values) {
+            this.values = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            int index = (int) value;
+            if (index < 0 || index >= values.length) {
+                return "";
+            }
+            return values[index];
+        }
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView1;
