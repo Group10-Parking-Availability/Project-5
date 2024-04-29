@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="@drawable/round">
@@ -16,7 +15,7 @@
         android:layout_marginStart="17dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="26dp"
-        android:text="Provide More Details Please:"
+        android:text="@string/provide_more_details_please"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/uncc_green" />
 
@@ -31,7 +30,7 @@
         android:layout_marginTop="76dp"
         android:layout_marginEnd="59dp"
         android:lineSpacingExtra="10dp"
-        android:text="For Direct Contact Please Call: 704-687-0161"
+        android:text="@string/for_direct_contact_please_call_704_687_0161"
         android:textAlignment="center"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -49,7 +48,7 @@
         android:layout_marginStart="19dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="3dp"
-        android:text="What Is The Issue?"
+        android:text="@string/what_is_the_issue"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/uncc_green" />
 
@@ -65,10 +64,11 @@
         android:layout_marginTop="-1dp"
         android:layout_marginEnd="24dp"
         android:ems="10"
-        android:hint="Enter Issue"
+        android:hint="@string/enter_issue"
         android:inputType="text"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:autofillHints="Enter Issue" />
 
     <Button
         android:id="@+id/sendButton"
@@ -81,7 +81,7 @@
         android:layout_marginStart="112dp"
         android:layout_marginTop="38dp"
         android:layout_marginEnd="116dp"
-        android:text="Send"
+        android:text="@string/send"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/uncc_green" />
 
@@ -97,9 +97,10 @@
         android:layout_marginTop="-1dp"
         android:layout_marginEnd="24dp"
         android:ems="10"
-        android:hint="Enter Details"
+        android:hint="@string/enter_details"
         android:inputType="text"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:autofillHints="Enter Details" />
 
 </RelativeLayout>

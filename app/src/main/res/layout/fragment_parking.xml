@@ -13,12 +13,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFavorites"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:paddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,6 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:background="@android:color/transparent"
-        android:paddingTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -71,19 +70,20 @@
 
     <Button
         android:id="@+id/reportbtn"
-        android:layout_width="88dp"
-        android:layout_height="26dp"
+        android:layout_width="94dp"
+        android:layout_height="43dp"
         android:layout_marginHorizontal="130dp"
         android:layout_marginVertical="380dp"
-        android:background="@color/uncc_gold"
-        android:text="Report"
-        android:textColor="@color/ic_launcher_background"
+        android:background="@drawable/round_button"
+        android:text="@string/report"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/include"
-
         app:layout_constraintEnd_toStartOf="@+id/include"
-        app:layout_constraintHorizontal_bias="0.33"
+        app:layout_constraintHorizontal_bias="0.306"
         app:layout_constraintStart_toEndOf="@+id/include"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
+        app:layout_constraintTop_toBottomOf="@+id/include"
+        app:layout_constraintVertical_bias="0.476" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

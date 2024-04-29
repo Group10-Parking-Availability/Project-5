@@ -7,4 +7,16 @@
     <string name="parking_availability">Parking Availability</string>
     <string name="unc_charlotte_logo">UNC Charlotte Logo</string>
     <string name="live">Live</string>
+    <string name="send">Send</string>
+    <string name="enter_details">Enter Details</string>
+    <string name="enter_issue">Enter Issue</string>
+    <string name="what_is_the_issue">What Is The Issue?</string>
+    <string name="for_direct_contact_please_call_704_687_0161">For Direct Contact Please Call: 704-687-0161</string>
+    <string name="provide_more_details_please">Provide More Details Please:</string>
+    <string name="report">Report</string>
+    <string name="available">#% Available</string>
+    <string name="location_icon">Location Icon</string>
+    <string name="location">Location</string>
+    <string name="favorites_button">Favorites Button</string>
+    <string name="arrow_button">Arrow Button</string>
 </resources>

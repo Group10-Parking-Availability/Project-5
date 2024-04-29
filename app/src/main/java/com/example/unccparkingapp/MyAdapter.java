@@ -20,10 +20,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.ArrayList;
@@ -35,7 +34,11 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.utils.ColorTemplate;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
@@ -134,7 +137,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         // Set text views and progress bar
         holder.textView1.setText(itemData.getLocation());
-        holder.textView2.setText(parkingAvailableInt + "%" + "\navailable");
+        if (parkingAvailableInt == -1) {
+            holder.textView2.setText("N/A\nAvailable");
+        } else {
+            holder.textView2.setText(parkingAvailableInt + "%" + "\nAvailable");
+        }
         holder.progressBarHorizontal.setProgress(parkingAvailableInt);
 
         // Define colors
@@ -193,31 +200,28 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         });
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Set click listener for location icon to redirect user to maps
         holder.location.setOnClickListener(v -> {
             ParkingData clickedItem = data.get(holder.getAdapterPosition());
 
-            db.collection("parking_data")
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            for(QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                if (Objects.equals(documentSnapshot.getString("location"), clickedItem.getLocation())) {
-                                    String url = documentSnapshot.getString("url");
-                                    Log.d("demo", "onClick: url = " + url);
-                                    gotoUrl(url);
-                                    break;
-                                }
-                            }
-                        } else {
-                            // Handle errors
-                            Log.d("demo", "onClick: error grabbing url!");
+            try {
+                // Read JSON data from file
+                JSONArray jsonArray = loadJSONFromAsset(this.context);
+                if (jsonArray != null) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        if (Objects.equals(jsonObject.getString("location"), clickedItem.getLocation())) {
+                            String url = jsonObject.getString("url");
+                            Log.d("demo", "onClick: url = " + url);
+                            gotoUrl(url);
+                            break;
                         }
-                    });
-
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
+
 
         // Set favorite icon color based on favorite state
         int iconColor = itemData.isFavorite() ? R.color.uncc_gold : R.color.uncc_green;
@@ -267,6 +271,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 return "";
             }
             return values[index];
+        }
+    }
+
+    // Function to load JSON data from file
+    private JSONArray loadJSONFromAsset (Context context) {
+        try {
+            InputStream is = context.getAssets().open("parkingData.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String json = new String(buffer, StandardCharsets.UTF_8);
+            return new JSONArray(json);
+        } catch (IOException | JSONException e) {
+            Log.d("demo", "loadJSONFromAsset: error loading JSON file");
+            return null;
         }
     }
 

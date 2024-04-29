@@ -3,6 +3,7 @@ package com.example.unccparkingapp;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -11,15 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.unccparkingapp.databinding.FragmentParkingBinding;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -39,7 +36,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +44,6 @@ import java.util.Objects;
 public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClickListener {
 
     FragmentParkingBinding binding;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -121,9 +116,9 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             rowNumbersForTotals.add(147);
             rowNumbersForTotals.add(195);
             rowNumbersForTotals.add(243);
-            //rowNumbersForTotals.add(291);
+            rowNumbersForTotals.add(291);
             rowNumbersForTotals.add(339);
-            //rowNumbersForTotals.add(387);
+            rowNumbersForTotals.add(387);
             rowNumbersForTotals.add(435);
             rowNumbersForTotals.add(483);
 
@@ -185,9 +180,13 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                         // Setting spotsFull based on the number in the cell, have to use formatter to access this since it is a numeric cell
                         spotsFull = Float.parseFloat(formatter.formatCellValue(currentCell));
 
-                        // Math to calculate the percentage of spots available
-                        parkingAvailableDecimal = 100 * (spotsFull/totalSpots);
-                        parkingAvailable = (int)Math.round(parkingAvailableDecimal);
+                        if (totalSpots != 9999) {
+                            // Math to calculate the percentage of spots available
+                            parkingAvailableDecimal = 100 - (100 * (spotsFull / totalSpots));
+                            parkingAvailable = (int) Math.round(parkingAvailableDecimal);
+                        } else {
+                            parkingAvailable = -1;
+                        }
 
                         // Loads if the location has been favorited from our Json file
                         boolean favorite = loadJson(location);
@@ -219,43 +218,6 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
         catch (IOException | InvalidFormatException e){
             Log.d("error", "Error: IOException when trying to read spreadsheet");
         }
-
-    // **Code that was used when accessing firebase**
-        // Collect data from the database and set the location and percent of parking available
-        /*
-        db.collection("parking_data")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-                            String location = document.getString("location");
-                            String parkingPercent = document.getString("parking_available");
-                            boolean favorite = loadJson(location);
-
-                            ParkingData parkingData = new ParkingData(location, parkingPercent, favorite);
-
-                            // Check if data is a favorite, and store accordingly
-                            if (parkingData.isFavorite()) {
-                                favoritesList.add(parkingData);
-                            } else {
-                                parkingList.add(parkingData);
-                            }
-                        }
-
-                        sortArrayLocation(parkingList);
-                        sortArrayLocation(favoritesList);
-                        updateFavoritesVisibility(favoritesList);
-                        // Notify adapters of data change
-                        adapter.notifyDataSetChanged();
-                        favAdapter.notifyDataSetChanged();
-                    } else {
-                        // Handle errors
-                        Toast.makeText(getActivity(), "Error fetching data", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-         */
 
         // Click listener for report button, opens pop up report menu
         binding.reportbtn.setOnClickListener(v -> {
@@ -290,7 +252,6 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             if (favoritesList.size() >= 3) {
                 float density = getResources().getDisplayMetrics().density;
                 int pixels = (int) (235 * density + 0.5f);
-
                 ViewGroup.LayoutParams layoutParams = binding.recyclerViewFavorites.getLayoutParams();
                 layoutParams.height = pixels;
                 binding.recyclerViewFavorites.setLayoutParams(layoutParams);
@@ -299,11 +260,6 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 binding.recyclerViewFavorites.setLayoutParams(layoutParams);
             }
-            int marginTopInDp = 8;
-            int marginTopInPx = (int) (marginTopInDp * getResources().getDisplayMetrics().density);
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) binding.textView3.getLayoutParams();
-            layoutParams.topMargin = marginTopInPx;
-            binding.textView3.setLayoutParams(layoutParams);
         }
     }
 

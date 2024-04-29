@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:srcCompat="@drawable/ic_location"
-            />
+            android:contentDescription="@string/location_icon" />
 
         <TextView
             android:id="@+id/textView2"
@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:breakStrategy="high_quality"
-            android:text="Text 2"
+            android:text="@string/available"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textStyle="normal" />
@@ -37,7 +37,7 @@
             android:layout_height="35dp"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="Text 1"
+            android:text="@string/location"
             android:textSize="22sp" />
 
         <ImageView
@@ -45,14 +45,16 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_favorites_filled" />
+            app:srcCompat="@drawable/ic_favorites_filled"
+            android:contentDescription="@string/favorites_button" />
 
         <ImageView
             android:id="@+id/dropDownArrow"
             android:layout_width="66dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_arrow_down" />
+            app:srcCompat="@drawable/ic_arrow_down"
+            android:contentDescription="@string/arrow_button" />
     </LinearLayout>
 
     <ProgressBar
