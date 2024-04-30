@@ -120,7 +120,7 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             rowNumbersForTotals.add(339);
             rowNumbersForTotals.add(387);
             rowNumbersForTotals.add(435);
-            rowNumbersForTotals.add(483);
+            //rowNumbersForTotals.add(483);
 
 
 
@@ -249,9 +249,9 @@ public class ParkingFragment extends Fragment implements MyAdapter.FavoritesClic
             binding.recyclerViewFavorites.setVisibility(View.VISIBLE);
             binding.favoritesText.setVisibility(View.VISIBLE);
 
-            if (favoritesList.size() >= 3) {
+            if (favoritesList.size() >= 4) {
                 float density = getResources().getDisplayMetrics().density;
-                int pixels = (int) (235 * density + 0.5f);
+                int pixels = (int) (317 * density + 0.5f);
                 ViewGroup.LayoutParams layoutParams = binding.recyclerViewFavorites.getLayoutParams();
                 layoutParams.height = pixels;
                 binding.recyclerViewFavorites.setLayoutParams(layoutParams);
